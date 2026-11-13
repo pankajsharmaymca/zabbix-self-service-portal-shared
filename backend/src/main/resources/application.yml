@@ -1,0 +1,60 @@
+server:
+  port: ${SERVER_PORT:8081}
+  # 127.0.0.1 = reachable only from this server (use this behind Apache).
+  address: ${SERVER_ADDRESS:0.0.0.0}
+  # Trust X-Forwarded-For / X-Forwarded-Proto from a local reverse proxy (Apache),
+  # so client IPs are logged correctly and HTTPS is detected.
+  forward-headers-strategy: native
+  error:
+    whitelabel:
+      enabled: false
+    include-stacktrace: never
+    include-message: never
+  servlet:
+    session:
+      timeout: ${PORTAL_SESSION_TIMEOUT:30m}
+      cookie:
+        name: PORTAL_SESSION
+        http-only: true
+        same-site: strict
+        # Set PORTAL_SECURE_COOKIE=true when the portal is served over HTTPS.
+        secure: ${PORTAL_SECURE_COOKIE:false}
+
+zabbix:
+  # Full URL of the Zabbix JSON-RPC endpoint (or the Zabbix frontend base URL;
+  # "/api_jsonrpc.php" is appended automatically when missing).
+  url: ${ZABBIX_URL:http://localhost:9090/api_jsonrpc.php}
+  # Trust self-signed certificates on the Zabbix server. Keep false in production
+  # and import the Zabbix CA into the JVM truststore instead.
+  insecure-ssl: ${ZABBIX_INSECURE_SSL:false}
+  # PEM file with the CA that signed the Zabbix HTTPS certificate (company CA / self-signed cert).
+  ca-file: ${ZABBIX_CA_FILE:}
+  timeout: 30s
+  # Upper bound on hosts/templates returned per search.
+  result-limit: 2000
+
+portal:
+  # Look of the portal for this installation (no rebuild needed)
+  # Host tag that names the application, when your Zabbix uses one (e.g. "application").
+  # The application search then also matches hosts carrying that tag.
+  app-tag: ${PORTAL_APP_TAG:}
+  branding:
+    title: ${PORTAL_TITLE:Zabbix Self-Service Portal}
+    # SVG, PNG or JPG, max 1 MB, e.g. /etc/zabbix-portal/logo.svg
+    logo-file: ${PORTAL_LOGO_FILE:}
+    # Hex colours, e.g. #16294A (buttons, headings) and #0B7A85 (links, selection)
+    primary-color: ${PORTAL_PRIMARY_COLOR:}
+    accent-color: ${PORTAL_ACCENT_COLOR:}
+  # Origins allowed to call the API cross-origin. Only needed for the Vite dev server;
+  # set PORTAL_CORS_ORIGINS= (empty) in production.
+  cors-origins: ${PORTAL_CORS_ORIGINS:http://localhost:5173}
+  # Comma-separated Zabbix user groups allowed to use the portal. Empty = any Zabbix user.
+  allowed-user-groups: ${PORTAL_ALLOWED_GROUPS:}
+  login:
+    # Failed sign-ins per client IP before it is blocked for the window.
+    max-failures: ${PORTAL_LOGIN_MAX_FAILURES:10}
+    window: ${PORTAL_LOGIN_WINDOW:15m}
+
+logging:
+  level:
+    com.example.zabbixportal: INFO

@@ -1,0 +1,19 @@
+node_modules/
+dist/
+target/
+backend/src/main/resources/static/
+.idea/
+*.iml
+.vscode/
+
+# Local settings and secrets — never commit these
+portal.env
+*.pem
+*.key
+*.p12
+*.jks
+portal.jar
+*.tar.gz
+
+# Logs and scratch
+*.log

@@ -1,0 +1,38 @@
+[Unit]
+Description=Zabbix Self-Service Portal
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=zbxportal
+Group=zbxportal
+EnvironmentFile=/etc/zabbix-portal/portal.env
+# Adjust the java path if `readlink -f "$(which java)"` shows another Java 21 location.
+ExecStart=/usr/bin/java -Xmx256m -jar /opt/zabbix-portal/portal.jar
+Restart=on-failure
+RestartSec=5
+SuccessExitStatus=143
+
+# --- Hardening: the service can only read its JAR and config, and write to a private /tmp ---
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+RestrictRealtime=true
+LockPersonality=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
